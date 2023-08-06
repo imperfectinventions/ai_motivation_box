@@ -61,7 +61,7 @@
 
 The wiring diagram for this project can be seen in the below image.
 
-![Wiring Diagram for the AI Motivation Box](/images/high_level_ai_motivation_diagram.drawio.png "Wiring Diagram for the AI Motivation Box")
+![Wiring Diagram for the AI Motivation Box](/images/high_level_ai_motivation_diagram.jpg "Wiring Diagram for the AI Motivation Box")
 
 ### Step 2: Code Install
 
@@ -79,7 +79,7 @@ I printed it at about 20% infill for most of it with 0.15mm resolution. You do n
 
 For the assembly, hot glue the push button to the top of the housing (as shown below). You will either need to solder leads onto the button (as I did) or attach leads some other way. 
 
-![Glue the button on](/images/place_button.jpg "Glue hte button in place with the leads to connect it to the ESP32")
+![Glue the button on](/images/place_button.jpg "Glue the button in place with the leads to connect it to the ESP32")
 
 Then, glue the LCD display into the front of the casing (as shown below).
 
