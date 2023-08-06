@@ -13,7 +13,7 @@
 - [Instructions](#instructions)
   - [Step 1: Electrical Setup](#step-1-electrical-setup)
   - [Step 2: Code Install](#step-2-code-install)
-  - [Step 3: 3D-Print](#step-3-3d-print-and-assemble)
+  - [Step 3: 3D-Print and Assemble](#step-3-3d-print-and-assemble)
   - [Step 4: Get Motivated I Guess](#step-4-get-motivated-i-guess)
  
 ## Introduction
