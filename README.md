@@ -16,9 +16,15 @@
   - [Step 3: 3D-Print](#step-3-3d-print)
   - [Step 4: Get Motivated I Guess](#step-4-get-motivated-i-guess)
  
+## Introduction
+
+This project utilizes the OpenAI API to pull down 5 motivational messages in the style of a random celebrity (that you specify in an array). This was a fun project to play around with the OpenAI API and finally use my I2C LCD display for something. 
+
+The prompt can be see best in [this](\code\prompt_engineering\test_motivation.py) file.
+ 
 ## Requirements
 
-### Software Requirments
+### Software Requirements
 
 | Software     | Version   | 
 |--------------|-----------|
@@ -26,7 +32,7 @@
 | [ESP32 Configuration of Arduino IDE](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/) | 2.0.11 or compatible |
 | Ultimaker Cura | 5.1.0 or higher |
 
-### Arduino Library Requirments 
+### Arduino Library Requirements 
 
 | Library     |
 |--------------|
