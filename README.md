@@ -95,6 +95,4 @@ Finally, place the button on the top, plug it in and get ready for some motivati
 
 ### Step 4: Get Motivated I Guess
 
-Down here it's a 1920s theme.
-
-![1920s Theme AI Motivation Box](/images/spacey_presentation.jpg "1920s themed AI motivation box")
+Yippee
