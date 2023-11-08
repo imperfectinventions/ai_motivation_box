@@ -21,7 +21,7 @@ int curr_celeb_num = 1;
 HTTPClient https;
 StaticJsonDocument<2048> temp_json_buff;
 char* buff = (char*)malloc(sizeof(char)*2048); //is really used as a buffer for all data types
-char* api_bearer_buff = (char*)malloc(sizeof(char)*50);
+char* api_bearer_buff = (char*)malloc(sizeof(char)*50); //used for storing bearer header
 DynamicJsonDocument openai_result_buff(2048);
 DynamicJsonDocument openai_content_buff(2048);
 WiFiClientSecure https_client;
@@ -37,15 +37,18 @@ void wifi_setup() {
   https_client.setCACert(openai_rootCACert);
 }
 
+//fills the HTTP header information needed for the API call
 void fill_api_bearer(char* api_bearer_buffer, char* header_val_bearer) {
   sprintf(api_bearer_buffer, header_val_bearer, openai_key);
   Serial.println();
 }
 
+//takes the f-string that is the prompt and inserts the celeb name into it and places that in the standard buffer
 int fill_prompt() {
   int rand_celeb = random(celeb_num);
   char* temp_celeb_chrArr = (char*)malloc(50);
   openai_celebs[rand_celeb].toCharArray(temp_celeb_chrArr, 50);
+  //1KB offet to store the prompt in a
   sprintf(buff+1024, openai_prompt, temp_celeb_chrArr);
   free(temp_celeb_chrArr);
   Serial.println("Prompt: ");
@@ -54,10 +57,11 @@ int fill_prompt() {
   return rand_celeb;
 }
 
+//load the prompt data correctly.
 void fill_prompt_json() {
   sprintf(buff, openai_json, buff+1024);
 }
-
+//HTTPS POST request to OpenAI endpoint
 //returns the random celeb num
 int post_openai() {
   Serial.println("Starting to parse openai");
@@ -98,7 +102,6 @@ int parse_openai() {
     return 1;
   }
   else {
-    //char curr_content = &openai_result_buff["choices"][0]["message"]["content"];
     DeserializationError err = deserializeJson(openai_content_buff, openai_result_buff["choices"][0]["message"]["content"]);
     if (err) {
       Serial.print("Deserialization failed for content openai");
@@ -109,6 +112,7 @@ int parse_openai() {
   }
 }
 
+//older func that doesn't adjust for word splitting. Very rudimentary
 void lcd_print_str_old(String* msg2print) {
   int curr_col = -1;
   int page_num = 0;
@@ -135,6 +139,7 @@ void lcd_print_str_old(String* msg2print) {
   }
 }
 
+//prints chars to screen in a slow loading fashion.
 void lcd_print_line(char* curr_line, int sz) {
   for (int i = 0; i < sz; i++) {
     lcd.print(curr_line[i]); 
@@ -144,9 +149,9 @@ void lcd_print_line(char* curr_line, int sz) {
   Serial.println();
 }
 
+//handles printing in a way that preserves spaces and tries to not cut words in half when possible. 
 void lcd_print_str(String* msg2print) {
-  Serial.println(ESP.getFreeHeap());
-  int curr_lcd_line_num = 0;
+  int curr_lcd_line_num = 0; //offset for teh curr_lcd_line_buff pointer to pull the current chars that should be displayed
   char* curr_lcd_line_buff = (char*)malloc(lcdCol + 2);
   Serial.print("Curr line buff pointer:");
   Serial.println(curr_lcd_line_buff);
@@ -158,13 +163,14 @@ void lcd_print_str(String* msg2print) {
   Serial.print("msg2print: ");
   Serial.println(msg2print->length());
   char* curr_lcd_buff = buff;
-  int curr_page = 0;
-  int curr_line = 0;
+  int curr_page = 0; //page is the screen number 
+  int curr_line = 0; //line is the lcd text lines
   bool end_of_buff = false;
   bool start_line = true;
   while (!end_of_buff) {
     int next_line_offset = lcdCol;
     int curr_line_size = lcdCol;
+    //to detect the end of the message (last line)
     if (curr_lcd_line_num >= ((int)msg2print->length() - lcdCol)) {
       end_of_buff = true;
       curr_line_size = (int)msg2print->length() - curr_lcd_line_num;
@@ -172,8 +178,10 @@ void lcd_print_str(String* msg2print) {
         curr_line_size = msg2print->length();
       }
     }
+    //when reach the last line
     if (end_of_buff) {
       memcpy(curr_lcd_line_buff, curr_lcd_buff + curr_lcd_line_num, curr_line_size);
+      //handling when last line should be on a new screen (AKA page)
       if (curr_line >= lcdRow-1) {
         curr_line = 0;
         delay(700);
@@ -187,6 +195,7 @@ void lcd_print_str(String* msg2print) {
       lcd.setCursor(0, curr_line);
       lcd_print_line(curr_lcd_line_buff, curr_line_size);
     }
+    //handling when just next line 
     else {
       memcpy(curr_lcd_line_buff, curr_lcd_buff + curr_lcd_line_num, curr_line_size+1);
       if (curr_line >= lcdRow-1) {
@@ -200,6 +209,7 @@ void lcd_print_str(String* msg2print) {
         start_line = false;
       }
       lcd.setCursor(0, curr_line);
+      //if about to split a word up, then figure out where that word starts and make the curr_lcd_line_num adjust for it
       if (curr_lcd_line_buff[lcdCol-1] != ' ' && curr_lcd_line_buff[lcdCol] != ' ') {
         int curr_split_line_num = lcdCol-1;
         while (curr_split_line_num > 0 && curr_lcd_line_buff[curr_split_line_num] != ' ') {
@@ -284,7 +294,6 @@ void loop() {
   lcd.setCursor(0, 0);
   String curr_celeb_str = "";
   curr_celeb_str += openai_celebs[curr_celeb_num];
-  //lcd.print(curr_celeb_str);
   lcd_print_str(&curr_celeb_str);
   Serial.println("Celeb done");
   lcd.setCursor(0, 2);
